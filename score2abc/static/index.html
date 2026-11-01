@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Score2ABC — sheet music to ABC notation</title>
+  <meta name="description" content="Convert piano sheet music from a photo, scan or PDF into editable ABC notation. Preview, play and download the result.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="vendor/abcjs-audio.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="./"><img src="favicon.svg" alt="" width="28" height="28"> Score2ABC</a>
+      <nav><a href="#how">How it works</a><a id="repo-link" href="https://github.com/mishazujev/img2abc" target="_blank" rel="noopener">Source</a></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Sheet music in, ABC notation out</h1>
+      <p>Upload a photo, scan or PDF of a printed piano score. Score2ABC reads the notes and gives you ABC text you can edit, play back and download.</p>
+    </section>
+
+    <section class="card" id="upload-card">
+      <label id="dropzone" class="dropzone" tabindex="0">
+        <input id="file-input" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.bmp,.webp,.mxl,.musicxml,.xml" hidden>
+        <svg viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><path fill="currentColor" d="M12 3l5 5h-3v6h-4V8H7l5-5zm-7 14h14v2H5v-2z"/></svg>
+        <strong>Drop your score here or click to choose</strong>
+        <span class="muted">One PDF, or one image per page (PNG, JPG, TIFF). MusicXML files convert instantly.</span>
+      </label>
+
+      <ol id="file-list" class="file-list" hidden></ol>
+
+      <div class="actions">
+        <button id="convert-btn" class="btn primary" disabled>Convert to ABC</button>
+        <button id="clear-btn" class="btn" hidden>Clear</button>
+        <button id="sample-btn" class="btn link">Or try a sample tune</button>
+      </div>
+
+      <div id="status" class="status" hidden role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <div>
+          <div id="status-text">Uploading…</div>
+          <div id="status-sub" class="muted small"></div>
+        </div>
+      </div>
+      <div id="error" class="error" hidden>
+        <p id="error-text"></p>
+        <details id="error-log-wrap" hidden><summary>Technical details</summary><pre id="error-log"></pre></details>
+      </div>
+    </section>
+
+    <section id="result" class="result" hidden>
+      <div class="result-bar">
+        <h2>Result</h2>
+        <div class="btn-row">
+          <button id="copy-btn" class="btn">Copy ABC</button>
+          <button id="dl-abc" class="btn primary">Download .abc</button>
+          <button id="dl-midi" class="btn">Download MIDI</button>
+          <a id="dl-xml" class="btn" hidden>MusicXML</a>
+        </div>
+      </div>
+      <p class="muted small">Recognition is rarely perfect. Compare with your original and fix notes in the editor — the preview updates as you type.</p>
+      <div class="panes">
+        <div class="pane">
+          <div class="pane-head">ABC <span id="abc-warn" class="warn small"></span></div>
+          <textarea id="abc-text" spellcheck="false" aria-label="ABC notation"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-head">Preview</div>
+          <div id="audio" class="audio"></div>
+          <div id="paper" class="paper"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" class="how">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div><b>1. Recognise</b><p><a href="https://audiveris.github.io/audiveris/" target="_blank" rel="noopener">Audiveris</a>, an open-source optical music recognition engine, finds staves, notes, rests and symbols and writes MusicXML.</p></div>
+        <div><b>2. Convert</b><p>MusicXML is translated to ABC: each staff and voice becomes an ABC voice, with key, meter, ties, tuplets, repeats and dynamics.</p></div>
+        <div><b>3. Check</b><p>The score is drawn and played in your browser with <a href="https://www.abcjs.net/" target="_blank" rel="noopener">abcjs</a>, so you can spot and correct mistakes.</p></div>
+      </div>
+      <h3>For the best results</h3>
+      <ul class="tips">
+        <li>Use printed (engraved) music. Handwritten scores are not supported.</li>
+        <li>Scan at 300 DPI, or photograph the page flat, straight on and evenly lit.</li>
+        <li>Upload pages in order; they are joined into one piece.</li>
+        <li>A page takes about 20–60 seconds to recognise.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap muted small">Uploads are deleted within an hour. Open source (MIT), built on Audiveris and abcjs.</div>
+  </footer>
+
+  <script src="vendor/abcjs-basic-min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
