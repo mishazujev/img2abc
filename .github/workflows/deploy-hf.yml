@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt pytest httpx
-      - run: chmod +x tests/fake_audiveris.sh && pytest -m -q
+      - run: chmod +x tests/fake_audiveris.sh && python -m pytest -q
 
   deploy:
     needs: test
