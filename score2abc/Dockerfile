@@ -16,7 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Audiveris ships a .deb with its own Java runtime. Fall back to the newest
-# release if the pinned version's asset is not found.
+# release if the pinned version's asset is not found. Its post-install script
+# registers a desktop menu entry, which fails in a container without menu
+# folders, so create them first and, if it still fails, skip that script.
 RUN set -eux; \
     url="https://github.com/Audiveris/audiveris/releases/download/${AUDIVERIS_VERSION}/Audiveris-${AUDIVERIS_VERSION}-ubuntu24.04-x86_64.deb"; \
     if ! curl -fsSL -o /tmp/audiveris.deb "$url"; then \
@@ -24,8 +26,14 @@ RUN set -eux; \
               | grep -o 'https://[^"]*ubuntu24\.04-x86_64\.deb' | head -n1); \
         curl -fsSL -o /tmp/audiveris.deb "$url"; \
     fi; \
+    mkdir -p /etc/xdg/menus /usr/share/applications /usr/share/desktop-directories \
+             /usr/share/icons/hicolor /usr/share/mime/packages; \
     apt-get update; \
-    apt-get install -y --no-install-recommends /tmp/audiveris.deb; \
+    if ! apt-get install -y --no-install-recommends /tmp/audiveris.deb; then \
+        rm -f /var/lib/dpkg/info/audiveris.postinst; \
+        dpkg --configure -a; \
+        apt-get install -y -f --no-install-recommends; \
+    fi; \
     rm -rf /tmp/audiveris.deb /var/lib/apt/lists/*; \
     test -x "$AUDIVERIS_BIN"
 
