@@ -6,6 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata \
     JAVA_TOOL_OPTIONS="-Djava.awt.headless=true" \
+    GDK_SCALE=1 \
     AUDIVERIS_BIN=/opt/audiveris/bin/Audiveris \
     PORT=7860
 
@@ -13,7 +14,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates curl python3 python3-venv \
         tesseract-ocr-eng tesseract-ocr-deu tesseract-ocr-fra tesseract-ocr-ita \
         fontconfig fonts-dejavu-core \
-    && rm -rf /var/lib/apt/lists/*
+        libgtk-3-0t64 xvfb xauth \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -sf "$(find /usr/lib -name 'libgtk-3.so.0' | head -n1)" /usr/lib/x86_64-linux-gnu/libgtk-3.so \
+    && ln -sf "$(find /usr/lib -name 'libgdk-3.so.0' | head -n1)" /usr/lib/x86_64-linux-gnu/libgdk-3.so
 
 # Audiveris ships a .deb with its own Java runtime. Fall back to the newest
 # release if the pinned version's asset is not found. Its post-install script

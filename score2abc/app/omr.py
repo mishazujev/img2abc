@@ -79,6 +79,10 @@ def run_audiveris(source: Path, outdir: Path) -> tuple[list[Path], str]:
     cmd = [AUDIVERIS, "-batch", "-transcribe", "-export",
            "-output", str(outdir), "-sheets", f"1-{MAX_PAGES}", "--", str(source)]
     try:
+        # Audiveris loads GTK at start-up even in batch mode; give it a
+        # virtual display when the server has none.
+        if not os.environ.get("DISPLAY") and shutil.which("xvfb-run"):
+            cmd = ["xvfb-run", "-a", "-s", "-screen 0 1280x1024x24"] + cmd
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=TIMEOUT)
     except subprocess.TimeoutExpired as exc:
         raise OmrError(f"Recognition took longer than {TIMEOUT // 60} minutes and was stopped.",
